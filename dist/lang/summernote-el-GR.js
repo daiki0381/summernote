@@ -7,7 +7,7 @@
  * Copyright 2013- Alan Hong. and other contributors
  * summernote may be freely distributed under the MIT license.
  * 
- * Date: 2020-05-20T16:47Z
+ * Date: 2024-01-04T10:19Z
  * 
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -157,8 +157,7 @@ return /******/ (function(modules) { // webpackBootstrap
         edit: 'Επεξεργασία συνδέσμου',
         textToDisplay: 'Κείμενο συνδέσμου',
         url: 'Σε ποιo URL πρέπει να πηγαίνει αυτός ο σύνδεσμος;',
-        openInNewWindow: 'Άνοιγμα σε νέο παράθυρο',
-        useProtocol: 'Χρήση προεπιλεγμένου πρωτοκόλλου'
+        openInNewWindow: 'Άνοιγμα σε νέο παράθυρο'
       },
       video: {
         video: 'Βίντεο',

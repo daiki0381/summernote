@@ -7,7 +7,7 @@
  * Copyright 2013- Alan Hong. and other contributors
  * summernote may be freely distributed under the MIT license.
  * 
- * Date: 2020-05-20T16:47Z
+ * Date: 2024-01-04T10:19Z
  * 
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -283,8 +283,7 @@ external_root_jQuery_commonjs2_jquery_commonjs_jquery_amd_jquery_default.a.exten
       edit: 'Edit',
       textToDisplay: 'Text to display',
       url: 'To what URL should this link go?',
-      openInNewWindow: 'Open in new window',
-      useProtocol: 'Use default protocol'
+      openInNewWindow: 'Open in new window'
     },
     table: {
       table: 'Table',
@@ -5156,6 +5155,9 @@ function Editor_createClass(Constructor, protoProps, staticProps) { if (protoPro
 
 
 var KEY_BOGUS = 'bogus';
+var MAILTO_PATTERN = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+var TEL_PATTERN = /^(\+?\d{1,3}[\s-]?)?(\d{1,4})[\s-]?(\d{1,4})[\s-]?(\d{1,4})$/;
+var URL_SCHEME_PATTERN = /^([A-Za-z][A-Za-z0-9+-.]*\:|#|\/)/;
 /**
  * @class Editor
  */
@@ -5344,7 +5346,6 @@ var Editor_Editor = /*#__PURE__*/function () {
       var linkUrl = linkInfo.url;
       var linkText = linkInfo.text;
       var isNewWindow = linkInfo.isNewWindow;
-      var checkProtocol = linkInfo.checkProtocol;
 
       var rng = linkInfo.range || _this.getLastRange();
 
@@ -5362,9 +5363,8 @@ var Editor_Editor = /*#__PURE__*/function () {
 
       if (_this.options.onCreateLink) {
         linkUrl = _this.options.onCreateLink(linkUrl);
-      } else if (checkProtocol) {
-        // if url doesn't have any protocol and not even a relative or a label, use http:// as default
-        linkUrl = /^([A-Za-z][A-Za-z0-9+-.]*\:|#|\/)/.test(linkUrl) ? linkUrl : _this.options.defaultProtocol + linkUrl;
+      } else {
+        linkUrl = _this.checkLinkUrl(linkUrl);
       }
 
       var anchors = [];
@@ -5671,6 +5671,19 @@ var Editor_Editor = /*#__PURE__*/function () {
       }
 
       return false;
+    }
+  }, {
+    key: "checkLinkUrl",
+    value: function checkLinkUrl(linkUrl) {
+      if (MAILTO_PATTERN.test(linkUrl)) {
+        return 'mailto://' + linkUrl;
+      } else if (TEL_PATTERN.test(linkUrl)) {
+        return 'tel://' + linkUrl;
+      } else if (!URL_SCHEME_PATTERN.test(linkUrl)) {
+        return 'http://' + linkUrl;
+      }
+
+      return linkUrl;
     }
     /**
      * create range
@@ -8354,6 +8367,9 @@ function LinkDialog_createClass(Constructor, protoProps, staticProps) { if (prot
 
 
 
+var LinkDialog_MAILTO_PATTERN = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+var LinkDialog_TEL_PATTERN = /^(\+?\d{1,3}[\s-]?)?(\d{1,4})[\s-]?(\d{1,4})[\s-]?(\d{1,4})$/;
+var LinkDialog_URL_SCHEME_PATTERN = /^([A-Za-z][A-Za-z0-9+-.]*\:|#|\/)/;
 
 var LinkDialog_LinkDialog = /*#__PURE__*/function () {
   function LinkDialog(context) {
@@ -8376,11 +8392,7 @@ var LinkDialog_LinkDialog = /*#__PURE__*/function () {
         className: 'sn-checkbox-open-in-new-window',
         text: this.lang.link.openInNewWindow,
         checked: true
-      }).render()).html() : '', external_root_jQuery_commonjs2_jquery_commonjs_jquery_amd_jquery_default()('<div/>').append(this.ui.checkbox({
-        className: 'sn-checkbox-use-protocol',
-        text: this.lang.link.useProtocol,
-        checked: true
-      }).render()).html()].join('');
+      }).render()).html() : ''].join('');
       var buttonClass = 'btn btn-primary note-btn note-btn-primary note-link-btn';
       var footer = "<input type=\"button\" href=\"#\" class=\"".concat(buttonClass, "\" value=\"").concat(this.lang.link.insert, "\" disabled>");
       this.$dialog = this.ui.dialog({
@@ -8407,6 +8419,28 @@ var LinkDialog_LinkDialog = /*#__PURE__*/function () {
         }
       });
     }
+  }, {
+    key: "checkLinkUrl",
+    value: function checkLinkUrl(linkUrl) {
+      if (LinkDialog_MAILTO_PATTERN.test(linkUrl)) {
+        return 'mailto://' + linkUrl;
+      } else if (LinkDialog_TEL_PATTERN.test(linkUrl)) {
+        return 'tel://' + linkUrl;
+      } else if (!LinkDialog_URL_SCHEME_PATTERN.test(linkUrl)) {
+        return 'http://' + linkUrl;
+      }
+
+      return linkUrl;
+    }
+  }, {
+    key: "onCheckLinkUrl",
+    value: function onCheckLinkUrl($input) {
+      var _this = this;
+
+      $input.on('blur', function (event) {
+        event.target.value = event.target.value == '' ? '' : _this.checkLinkUrl(event.target.value);
+      });
+    }
     /**
      * toggle update button
      */
@@ -8426,25 +8460,23 @@ var LinkDialog_LinkDialog = /*#__PURE__*/function () {
   }, {
     key: "showLinkDialog",
     value: function showLinkDialog(linkInfo) {
-      var _this = this;
+      var _this2 = this;
 
       return external_root_jQuery_commonjs2_jquery_commonjs_jquery_amd_jquery_default.a.Deferred(function (deferred) {
-        var $linkText = _this.$dialog.find('.note-link-text');
+        var $linkText = _this2.$dialog.find('.note-link-text');
 
-        var $linkUrl = _this.$dialog.find('.note-link-url');
+        var $linkUrl = _this2.$dialog.find('.note-link-url');
 
-        var $linkBtn = _this.$dialog.find('.note-link-btn');
+        var $linkBtn = _this2.$dialog.find('.note-link-btn');
 
-        var $openInNewWindow = _this.$dialog.find('.sn-checkbox-open-in-new-window input[type=checkbox]');
+        var $openInNewWindow = _this2.$dialog.find('.sn-checkbox-open-in-new-window input[type=checkbox]');
 
-        var $useProtocol = _this.$dialog.find('.sn-checkbox-use-protocol input[type=checkbox]');
-
-        _this.ui.onDialogShown(_this.$dialog, function () {
-          _this.context.triggerEvent('dialog.shown'); // If no url was given and given text is valid URL then copy that into URL Field
+        _this2.ui.onDialogShown(_this2.$dialog, function () {
+          _this2.context.triggerEvent('dialog.shown'); // If no url was given and given text is valid URL then copy that into URL Field
 
 
           if (!linkInfo.url && func.isValidUrl(linkInfo.text)) {
-            linkInfo.url = linkInfo.text;
+            linkInfo.url = _this2.checkLinkUrl(linkInfo.text);
           }
 
           $linkText.on('input paste propertychange', function () {
@@ -8452,7 +8484,7 @@ var LinkDialog_LinkDialog = /*#__PURE__*/function () {
             // cloning text from linkUrl will be stopped.
             linkInfo.text = $linkText.val();
 
-            _this.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
+            _this2.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
           }).val(linkInfo.text);
           $linkUrl.on('input paste propertychange', function () {
             // Display same text on `Text to display` as default
@@ -8461,38 +8493,37 @@ var LinkDialog_LinkDialog = /*#__PURE__*/function () {
               $linkText.val($linkUrl.val());
             }
 
-            _this.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
+            _this2.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
           }).val(linkInfo.url);
 
           if (!env.isSupportTouch) {
             $linkUrl.trigger('focus');
           }
 
-          _this.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
+          _this2.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
 
-          _this.bindEnterKey($linkUrl, $linkBtn);
+          _this2.bindEnterKey($linkUrl, $linkBtn);
 
-          _this.bindEnterKey($linkText, $linkBtn);
+          _this2.bindEnterKey($linkText, $linkBtn);
 
-          var isNewWindowChecked = linkInfo.isNewWindow !== undefined ? linkInfo.isNewWindow : _this.context.options.linkTargetBlank;
+          _this2.onCheckLinkUrl($linkUrl);
+
+          var isNewWindowChecked = linkInfo.isNewWindow !== undefined ? linkInfo.isNewWindow : _this2.context.options.linkTargetBlank;
           $openInNewWindow.prop('checked', isNewWindowChecked);
-          var useProtocolChecked = linkInfo.url ? false : _this.context.options.useProtocol;
-          $useProtocol.prop('checked', useProtocolChecked);
           $linkBtn.one('click', function (event) {
             event.preventDefault();
             deferred.resolve({
               range: linkInfo.range,
               url: $linkUrl.val(),
               text: $linkText.val(),
-              isNewWindow: $openInNewWindow.is(':checked'),
-              checkProtocol: $useProtocol.is(':checked')
+              isNewWindow: $openInNewWindow.is(':checked')
             });
 
-            _this.ui.hideDialog(_this.$dialog);
+            _this2.ui.hideDialog(_this2.$dialog);
           });
         });
 
-        _this.ui.onDialogHidden(_this.$dialog, function () {
+        _this2.ui.onDialogHidden(_this2.$dialog, function () {
           // detach events
           $linkText.off();
           $linkUrl.off();
@@ -8503,7 +8534,7 @@ var LinkDialog_LinkDialog = /*#__PURE__*/function () {
           }
         });
 
-        _this.ui.showDialog(_this.$dialog);
+        _this2.ui.showDialog(_this2.$dialog);
       }).promise();
     }
     /**
@@ -8513,16 +8544,16 @@ var LinkDialog_LinkDialog = /*#__PURE__*/function () {
   }, {
     key: "show",
     value: function show() {
-      var _this2 = this;
+      var _this3 = this;
 
       var linkInfo = this.context.invoke('editor.getLinkInfo');
       this.context.invoke('editor.saveRange');
       this.showLinkDialog(linkInfo).then(function (linkInfo) {
-        _this2.context.invoke('editor.restoreRange');
+        _this3.context.invoke('editor.restoreRange');
 
-        _this2.context.invoke('editor.createLink', linkInfo);
+        _this3.context.invoke('editor.createLink', linkInfo);
       }).fail(function () {
-        _this2.context.invoke('editor.restoreRange');
+        _this3.context.invoke('editor.restoreRange');
       });
     }
   }]);
@@ -9802,8 +9833,6 @@ external_root_jQuery_commonjs2_jquery_commonjs_jquery_amd_jquery_default.a.summe
     width: null,
     height: null,
     linkTargetBlank: true,
-    useProtocol: true,
-    defaultProtocol: 'http://',
     focus: false,
     tabDisabled: false,
     tabSize: 4,
@@ -10628,7 +10657,7 @@ var imageDialog = function imageDialog(opt) {
 };
 
 var linkDialog = function linkDialog(opt) {
-  var body = '<div class="note-form-group">' + '<label for="note-dialog-link-txt-' + opt.id + '" class="note-form-label">' + opt.lang.link.textToDisplay + '</label>' + '<input id="note-dialog-link-txt-' + opt.id + '" class="note-link-text note-input" type="text"/>' + '</div>' + '<div class="note-form-group">' + '<label for="note-dialog-link-url-' + opt.id + '" class="note-form-label">' + opt.lang.link.url + '</label>' + '<input id="note-dialog-link-url-' + opt.id + '" class="note-link-url note-input" type="text" value="http://"/>' + '</div>' + (!opt.disableLinkTarget ? '<div class="checkbox"><label for="note-dialog-link-nw-' + opt.id + '"><input id="note-dialog-link-nw-' + opt.id + '" type="checkbox" checked> ' + opt.lang.link.openInNewWindow + '</label></div>' : '') + '<div class="checkbox"><label for="note-dialog-link-up-' + opt.id + '"><input id="note-dialog-link-up-' + opt.id + '" type="checkbox" checked> ' + opt.lang.link.useProtocol + '</label></div>';
+  var body = '<div class="note-form-group">' + '<label for="note-dialog-link-txt-' + opt.id + '" class="note-form-label">' + opt.lang.link.textToDisplay + '</label>' + '<input id="note-dialog-link-txt-' + opt.id + '" class="note-link-text note-input" type="text"/>' + '</div>' + '<div class="note-form-group">' + '<label for="note-dialog-link-url-' + opt.id + '" class="note-form-label">' + opt.lang.link.url + '</label>' + '<input id="note-dialog-link-url-' + opt.id + '" class="note-link-url note-input" type="text" value="http://"/>' + '</div>' + (!opt.disableLinkTarget ? '<div class="checkbox"><label for="note-dialog-link-nw-' + opt.id + '"><input id="note-dialog-link-nw-' + opt.id + '" type="checkbox" checked> ' + opt.lang.link.openInNewWindow + '</label></div>' : '');
   var footer = ['<button href="#" type="button" class="note-btn note-btn-primary note-link-btn disabled" disabled>', opt.lang.link.insert, '</button>'].join('');
   return dialog({
     className: 'link-dialog',
