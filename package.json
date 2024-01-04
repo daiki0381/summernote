@@ -1,19 +1,20 @@
 {
-  "name": "summernote",
-  "description": "Super simple WYSIWYG editor",
+  "name": "summernote-wrapper-0.8.18",
+  "description": "I'm applying and extending a patch (#4556) to Summernote version 0.8.18.",
   "version": "0.8.18",
   "license": "MIT",
   "keywords": [
     "editor",
-    "WYSIWYG"
+    "WYSIWYG",
+    "summernote"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/summernote/summernote.git"
+    "url": "https://github.com/daiki0381/summernote.git"
   },
   "author": {
-    "name": "hackerwins",
-    "email": "<susukang98@gmail.com>"
+    "name": "daiki0381",
+    "email": "<daiki03810218@gmail.com>"
   },
   "main": "dist/summernote.js",
   "scripts": {
