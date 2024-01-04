@@ -2,9 +2,7 @@
 
 Super simple WYSIWYG Editor.
 
-[![Build Status](https://travis-ci.org/summernote/summernote.svg?branch=develop)](http://travis-ci.org/summernote/summernote)
-[![npm version](https://badge.fury.io/js/summernote.svg)](http://badge.fury.io/js/summernote)
-[![Coverage Status](https://coveralls.io/repos/summernote/summernote/badge.svg?branch=develop&service=github)](https://coveralls.io/github/summernote/summernote?branch=develop)
+I'm applying and extending a patch (#4556) to Summernote version 0.8.18.
 
 ### Summernote
 Summernote is a JavaScript library that helps you create WYSIWYG editors online.
