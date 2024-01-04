@@ -118,8 +118,6 @@ $.summernote = $.extend($.summernote, {
     width: null,
     height: null,
     linkTargetBlank: true,
-    useProtocol: true,
-    defaultProtocol: 'http://',
 
     focus: false,
     tabDisabled: false,
