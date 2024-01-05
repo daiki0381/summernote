@@ -1,8 +1,8 @@
+I'm applying and extending a patch (summernote#4566) to Summernote version 0.8.18.
+
 # Summernote
 
 Super simple WYSIWYG Editor.
-
-I'm applying and extending a patch (summernote#4566) to Summernote version 0.8.18.
 
 ### Summernote
 Summernote is a JavaScript library that helps you create WYSIWYG editors online.
