@@ -1,4 +1,5 @@
-I'm applying and extending a patch (summernote#4566) to Summernote version 0.8.18.
+> [!NOTE]
+> I'm applying and extending a patch (summernote#4566) to Summernote version 0.8.18.
 
 # Summernote
 
